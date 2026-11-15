@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import asdict, dataclass
-from datetime import datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 import logging
 from typing import Any
 
@@ -49,6 +49,7 @@ from .const import (
     MAX_POINTS,
     MIN_WINDOW_SAMPLES,
     PRESENCE_HOME_STATES,
+    SETTLE_S,
     STD_DEV_WINDOW_S,
     STORAGE_VERSION,
     THRESHOLD_OFF_RATIO,
@@ -137,6 +138,7 @@ class SleepTracker:
 
         self.agitation: float | None = None
         self.moving = False
+        self.settling_until: datetime | None = None
 
         self._axes: dict[str, float] = {}
         self._window: deque[tuple[datetime, float]] = deque()
@@ -170,6 +172,7 @@ class SleepTracker:
             async_track_time_interval(self.hass, self._on_tick, TICK),
         ]
         self._schedule_window()
+        self._start_settling(dt_util.now())
         for entity_id in self.sensors:
             if (state := self.hass.states.get(entity_id)) is not None:
                 self._read_axis(entity_id, state.state)
@@ -222,14 +225,36 @@ class SleepTracker:
             return False
         return len(self._axes) == len(self.sensors)
 
+    def is_settling(self, now: datetime | None = None) -> bool:
+        """Whether the readings are being discarded after a start or a reconnection."""
+        return self.settling_until is not None and (now or dt_util.now()) < self.settling_until
+
+    @callback
+    def _start_settling(self, now: datetime) -> None:
+        """Discard the readings for ``SETTLE_S`` and restart the analysis from scratch."""
+        self.settling_until = now + timedelta(seconds=SETTLE_S)
+        self._window.clear()
+        self.agitation = None
+        self.moving = False
+        self._notify()
+
     @callback
     def _on_sensor(self, event: Event[EventStateChangedData]) -> None:
         """New accelerometer value: update the agitation and detect movements."""
         new_state = event.data["new_state"]
-        if new_state is None or not self._read_axis(event.data["entity_id"], new_state.state):
+        entity_id = event.data["entity_id"]
+        if new_state is None:
             return
+        reconnected = entity_id not in self._axes
+        ready = self._read_axis(entity_id, new_state.state)
         now = dt_util.now()
-        self._window.append((now, magnitude([self._axes[entity_id] for entity_id in self.sensors])))
+        if reconnected and entity_id in self._axes:
+            _LOGGER.debug("%s is numeric again: settling for %s s", entity_id, SETTLE_S)
+            self._start_settling(now)
+        if not ready:
+            return
+        if not self.is_settling(now):
+            self._window.append((now, magnitude([self._axes[axis] for axis in self.sensors])))
         self._analyse(now)
 
     @callback
@@ -359,6 +384,22 @@ class SleepTracker:
         self._save()
         return True
 
+    @callback
+    def async_set_score(self, score: float, average: float | None = None, night_of: date | None = None) -> None:
+        """Set the last score (and optionally the average), e.g. when migrating from another setup.
+
+        The imported result has no breakdown. ``last_calculation`` and the night in
+        progress are left alone, so the window still ends with a regular score.
+        """
+        self.last_result = {
+            "score": max(0, min(100, round(score))),
+            "night_of": (night_of or dt_util.now().date()).isoformat(),
+            "imported": True,
+        }
+        if average is not None:
+            self.average = round(max(0.0, min(100.0, float(average))), 1)
+        self._save()
+
     async def async_set_window(self, *, start: time | None = None, end: time | None = None) -> None:
         """Change the sleep window (from the time entities)."""
         self.window_start = start or self.window_start
@@ -398,6 +439,8 @@ class SleepTracker:
             "in_window": self.in_window(),
             "agitation": self.agitation,
             "moving": self.moving,
+            "settling": self.is_settling(),
+            "settling_until": _iso(self.settling_until),
             "axes_available": len(self._axes),
             "window_samples": len(self._window),
             "threshold_on": self.threshold_on,

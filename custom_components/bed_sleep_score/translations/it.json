@@ -90,6 +90,9 @@
           },
           "formula_version": {
             "name": "Versione formula"
+          },
+          "imported": {
+            "name": "Importato"
           }
         }
       },
@@ -115,6 +118,38 @@
       },
       "window_end": {
         "name": "Fine finestra di sonno"
+      }
+    }
+  },
+  "exceptions": {
+    "entry_not_found": {
+      "message": "Nessuna voce Bed Sleep Score con ID {entry_id}."
+    },
+    "entry_not_loaded": {
+      "message": "{name} non è caricato: attivalo o correggine la configurazione, poi riprova."
+    }
+  },
+  "services": {
+    "set_score": {
+      "name": "Imposta punteggio",
+      "description": "Imposta il punteggio dell'ultima notte e, facoltativamente, la media a 7 giorni. Utile per migrare da un altro sistema: i valori restano dopo un riavvio e la finestra successiva viene valutata come sempre.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Monitor del sonno",
+          "description": "La voce Bed Sleep Score da aggiornare."
+        },
+        "score": {
+          "name": "Punteggio",
+          "description": "Punteggio dell'ultima notte, 0-100."
+        },
+        "average": {
+          "name": "Media 7 giorni",
+          "description": "Facoltativa. Valore iniziale della media a 7 giorni, 0-100. Se omessa, la media non cambia."
+        },
+        "night_of": {
+          "name": "Notte del",
+          "description": "Facoltativa. Data del mattino in cui è finita la notte. Predefinita: oggi."
+        }
       }
     }
   }

@@ -30,6 +30,13 @@ DEFAULT_WINDOW_END: Final = time(8, 0)
 # with the movement threshold, which is the only user-facing tuning knob.
 STD_DEV_WINDOW_S: Final = 120
 MIN_WINDOW_SAMPLES: Final = 5
+# After the tracker starts, or an axis becomes numeric again after being
+# unavailable/unknown, the readings are discarded for this long: the first
+# values after a reconnection are often off and would hold the agitation above
+# the threshold for a whole standard-deviation window. One full window plus a
+# minute of margin lets the sensor stabilise; the analysis then restarts from
+# an empty window, so nothing collected while settling can trigger a movement.
+SETTLE_S: Final = STD_DEV_WINDOW_S + 60
 DEFAULT_THRESHOLD: Final = 0.102  # a movement starts above this agitation
 THRESHOLD_OFF_RATIO: Final = 0.765  # ... and ends below threshold * ratio
 CALM_FULL: Final = 0.008  # net agitation (mean - min) for full calm points
@@ -51,6 +58,13 @@ EMA_ALPHA: Final = 0.25  # "7-day" exponential moving average
 GRACE_HOURS: Final = 3  # catch-up after a restart
 
 MAX_POINTS: Final = {"continuity": 30, "movements": 25, "wakeups": 20, "calm": 15, "intensity": 10}
+
+# ----------------------------------------------------------------- actions
+SERVICE_SET_SCORE: Final = "set_score"
+ATTR_CONFIG_ENTRY_ID: Final = "config_entry_id"
+ATTR_SCORE: Final = "score"
+ATTR_AVERAGE: Final = "average"
+ATTR_NIGHT_OF: Final = "night_of"
 
 PRESENCE_HOME_STATES: Final = frozenset({"home", "on"})
 STORAGE_VERSION: Final = 1

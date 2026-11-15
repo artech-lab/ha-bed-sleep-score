@@ -90,6 +90,9 @@
           },
           "formula_version": {
             "name": "Formula version"
+          },
+          "imported": {
+            "name": "Imported"
           }
         }
       },
@@ -115,6 +118,38 @@
       },
       "window_end": {
         "name": "Sleep window end"
+      }
+    }
+  },
+  "exceptions": {
+    "entry_not_found": {
+      "message": "No Bed Sleep Score entry with ID {entry_id}."
+    },
+    "entry_not_loaded": {
+      "message": "{name} is not loaded: enable it or fix its setup, then try again."
+    }
+  },
+  "services": {
+    "set_score": {
+      "name": "Set score",
+      "description": "Sets the score of the last night and, optionally, the 7-day average. Useful when migrating from another setup: the values are kept across restarts, and the next window is scored as usual.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Sleep tracker",
+          "description": "The Bed Sleep Score entry to update."
+        },
+        "score": {
+          "name": "Score",
+          "description": "Score of the last night, 0-100."
+        },
+        "average": {
+          "name": "7-day average",
+          "description": "Optional. Starting value of the 7-day average, 0-100. If omitted, the average is not changed."
+        },
+        "night_of": {
+          "name": "Night of",
+          "description": "Optional. Date of the morning the night ended. Default: today."
+        }
       }
     }
   }

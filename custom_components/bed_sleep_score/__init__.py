@@ -7,14 +7,25 @@ from pathlib import Path
 
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.loader import async_get_integration
+import voluptuous as vol
 
-from .const import CARD_FILENAME, CARD_URL, DOMAIN
+from .const import (
+    ATTR_AVERAGE,
+    ATTR_CONFIG_ENTRY_ID,
+    ATTR_NIGHT_OF,
+    ATTR_SCORE,
+    CARD_FILENAME,
+    CARD_URL,
+    DOMAIN,
+    SERVICE_SET_SCORE,
+)
 from .tracker import SleepTracker
 
 PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR, Platform.SENSOR, Platform.TIME]
@@ -22,6 +33,16 @@ PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR, Platform.SENSOR, Platform.T
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 type SleepScoreConfigEntry = ConfigEntry[SleepTracker]
+
+_PERCENT = vol.All(vol.Coerce(float), vol.Range(min=0, max=100))
+SET_SCORE_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_CONFIG_ENTRY_ID): cv.string,
+        vol.Required(ATTR_SCORE): _PERCENT,
+        vol.Optional(ATTR_AVERAGE): _PERCENT,
+        vol.Optional(ATTR_NIGHT_OF): cv.date,
+    }
+)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -36,7 +57,29 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     card = Path(__file__).parent / "frontend" / CARD_FILENAME
     await hass.http.async_register_static_paths([StaticPathConfig(CARD_URL, str(card), cache_headers=False)])
     add_extra_js_url(hass, f"{CARD_URL}?v={version}")
+    hass.services.async_register(DOMAIN, SERVICE_SET_SCORE, _async_set_score, schema=SET_SCORE_SCHEMA)
     return True
+
+
+@callback
+def _async_set_score(call: ServiceCall) -> None:
+    """Set the last score and, optionally, the 7-day average of one tracker."""
+    entry_id = call.data[ATTR_CONFIG_ENTRY_ID]
+    entry = call.hass.config_entries.async_get_entry(entry_id)
+    if entry is None or entry.domain != DOMAIN:
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="entry_not_found",
+            translation_placeholders={"entry_id": entry_id},
+        )
+    if entry.state is not ConfigEntryState.LOADED:
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="entry_not_loaded",
+            translation_placeholders={"name": entry.title},
+        )
+    tracker: SleepTracker = entry.runtime_data
+    tracker.async_set_score(call.data[ATTR_SCORE], call.data.get(ATTR_AVERAGE), call.data.get(ATTR_NIGHT_OF))
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SleepScoreConfigEntry) -> bool:

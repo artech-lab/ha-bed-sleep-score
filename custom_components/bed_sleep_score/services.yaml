@@ -1,0 +1,27 @@
+set_score:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: bed_sleep_score
+    score:
+      required: true
+      example: 82
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 1
+          mode: box
+    average:
+      example: 78.5
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 0.1
+          mode: box
+    night_of:
+      selector:
+        date:

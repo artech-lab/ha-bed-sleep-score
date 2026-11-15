@@ -115,7 +115,7 @@ language of Home Assistant.
 
 | Entity | Description |
 | --- | --- |
-| `sensor.sleep_tracker_score` | Score of the last night. Attributes: `night_of`, `components`, `continuity_minutes`, `movements`, `clustered_movements`, `net_agitation`, `peak_agitation`, `samples`, `neutral_signal`. |
+| `sensor.sleep_tracker_score` | Score of the last night. Attributes: `night_of`, `components`, `continuity_minutes`, `movements`, `clustered_movements`, `net_agitation`, `peak_agitation`, `samples`, `neutral_signal` (`imported` instead of the breakdown after `set_score`). |
 | `sensor.sleep_tracker_score_7_day_average` | Exponential moving average of the score (≈ 7 days). |
 | `sensor.sleep_tracker_movements` | Movement episodes of the night. |
 | `sensor.sleep_tracker_clustered_movements` | Movements less than 15 minutes after the previous one. |
@@ -127,6 +127,24 @@ language of Home Assistant.
 
 The night counters restart at the beginning of the window and keep last night's values during the day.
 Use them freely in automations, for example to dim the lights when the score is low.
+
+## Migrating from another setup
+
+After the installation the score stays `unknown` until the end of the first window and the 7-day
+average starts from scratch. To carry over the values of your previous setup, call the
+`bed_sleep_score.set_score` action once (*Developer tools → Actions*):
+
+```yaml
+action: bed_sleep_score.set_score
+data:
+  config_entry_id: 0123456789abcdef0123456789abcdef  # pick the tracker in the UI editor
+  score: 82
+  average: 78.5        # optional, 0-100
+  night_of: "2026-11-14" # optional, default today
+```
+
+The imported score has no breakdown, so the card hides its detail line. The values survive restarts,
+and the next window is scored as usual, even on the same day.
 
 ## The score
 
@@ -166,7 +184,10 @@ if too many are counted.
 
 - **The card is not in the card picker** — reload the browser page once after installing or updating.
 - **The score is `unknown`** — it is calculated at the end of the first complete window; with a presence
-  entity, that entity must be `home`/`on` at that time.
+  entity, that entity must be `home`/`on` at that time. To start from known values, see
+  [Migrating from another setup](#migrating-from-another-setup).
+- **Nothing is detected right after a restart** — for 3 minutes after Home Assistant starts, or after
+  an axis comes back from `unavailable`, the readings are ignored while the sensor settles.
 - **Something else** — attach the diagnostics (*device page → ⋮ → Download diagnostics*) to a
   [new issue](https://github.com/artech-lab/ha-bed-sleep-score/issues).
 

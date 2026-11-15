@@ -42,5 +42,10 @@
         "default": "mdi:weather-sunny"
       }
     }
+  },
+  "services": {
+    "set_score": {
+      "service": "mdi:database-import"
+    }
   }
 }
