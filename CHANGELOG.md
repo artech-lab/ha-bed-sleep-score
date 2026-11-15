@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-15
+
 ### Added
 
 - `bed_sleep_score.set_score` action: sets the last score and, optionally, the 7-day average, to carry
