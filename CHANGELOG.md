@@ -6,6 +6,9 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+- Manifest: declare the `health_wellbeing` integration category.
+- CI: `actions/setup-python` v7 (Node 24).
+
 ## [1.0.0] - 2026-11-15
 
 First public release.

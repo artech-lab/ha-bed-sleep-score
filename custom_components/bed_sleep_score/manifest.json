@@ -1,6 +1,9 @@
 {
   "domain": "bed_sleep_score",
   "name": "Bed Sleep Score",
+  "categories": [
+    "health_wellbeing"
+  ],
   "codeowners": [
     "@artech-lab"
   ],
