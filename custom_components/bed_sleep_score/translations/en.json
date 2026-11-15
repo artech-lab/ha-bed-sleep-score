@@ -1,0 +1,121 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up a bed sleep tracker",
+        "description": "Pick the accelerometer on your bed and the sleep window. The integration analyses the acceleration itself: every night it detects the movements inside the window and scores the night from 0 to 100 when the window ends.",
+        "data": {
+          "name": "Name",
+          "accelerometer_sensors": "Bed accelerometer sensors",
+          "presence_entity": "Presence entity (optional)",
+          "window_start": "Sleep window start",
+          "window_end": "Sleep window end"
+        },
+        "data_description": {
+          "name": "Used for the device and as the prefix of the entity IDs.",
+          "accelerometer_sensors": "The acceleration axes of the bed sensor (X, Y and Z, in m/s²), or a single sensor that already holds the acceleration magnitude.",
+          "presence_entity": "If set, the night is scored only when this entity is home/on, so an empty bed is not mistaken for a perfect night.",
+          "window_start": "Movements are counted from this time. Can be changed later from the card or the device page.",
+          "window_end": "The night is scored at this time."
+        }
+      }
+    },
+    "error": {
+      "sensor_count": "Select from one to three sensors.",
+      "window_empty": "Start and end must be different."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Sleep tracker options",
+        "data": {
+          "accelerometer_sensors": "Bed accelerometer sensors",
+          "presence_entity": "Presence entity (optional)",
+          "movement_threshold": "Movement threshold"
+        },
+        "data_description": {
+          "accelerometer_sensors": "The acceleration axes of the bed sensor (X, Y and Z, in m/s²), or a single sensor that already holds the acceleration magnitude.",
+          "presence_entity": "If set, the night is scored only when this entity is home/on, so an empty bed is not mistaken for a perfect night.",
+          "movement_threshold": "Agitation (rolling standard deviation of the acceleration, m/s²) above which a movement is detected. Lower it if movements are missed, raise it if too many are counted. The calm and intensity scales follow this value."
+        }
+      }
+    },
+    "error": {
+      "sensor_count": "Select from one to three sensors."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "window_active": {
+        "name": "Sleep window active"
+      },
+      "movement": {
+        "name": "Bed movement"
+      }
+    },
+    "sensor": {
+      "score": {
+        "name": "Sleep score",
+        "state_attributes": {
+          "night_of": {
+            "name": "Night of"
+          },
+          "components": {
+            "name": "Components"
+          },
+          "max_points": {
+            "name": "Max points"
+          },
+          "continuity_minutes": {
+            "name": "Longest undisturbed sleep (min)"
+          },
+          "movements": {
+            "name": "Movements"
+          },
+          "clustered_movements": {
+            "name": "Clustered movements"
+          },
+          "net_agitation": {
+            "name": "Net agitation"
+          },
+          "peak_agitation": {
+            "name": "Peak agitation"
+          },
+          "samples": {
+            "name": "Samples"
+          },
+          "neutral_signal": {
+            "name": "Neutral signal fallback"
+          },
+          "formula_version": {
+            "name": "Formula version"
+          }
+        }
+      },
+      "score_7_day_average": {
+        "name": "Sleep score 7-day average"
+      },
+      "movements": {
+        "name": "Movements"
+      },
+      "clustered_movements": {
+        "name": "Clustered movements"
+      },
+      "longest_undisturbed_sleep": {
+        "name": "Longest undisturbed sleep"
+      },
+      "agitation": {
+        "name": "Agitation"
+      }
+    },
+    "time": {
+      "window_start": {
+        "name": "Sleep window start"
+      },
+      "window_end": {
+        "name": "Sleep window end"
+      }
+    }
+  }
+}

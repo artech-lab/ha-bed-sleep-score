@@ -1,0 +1,46 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "window_active": {
+        "default": "mdi:power-sleep",
+        "state": {
+          "off": "mdi:sleep-off"
+        }
+      },
+      "movement": {
+        "default": "mdi:bed",
+        "state": {
+          "on": "mdi:bed-clock"
+        }
+      }
+    },
+    "sensor": {
+      "score": {
+        "default": "mdi:sleep"
+      },
+      "score_7_day_average": {
+        "default": "mdi:chart-line"
+      },
+      "movements": {
+        "default": "mdi:bed-clock"
+      },
+      "clustered_movements": {
+        "default": "mdi:run-fast"
+      },
+      "longest_undisturbed_sleep": {
+        "default": "mdi:timer-sand"
+      },
+      "agitation": {
+        "default": "mdi:vibrate"
+      }
+    },
+    "time": {
+      "window_start": {
+        "default": "mdi:weather-night"
+      },
+      "window_end": {
+        "default": "mdi:weather-sunny"
+      }
+    }
+  }
+}

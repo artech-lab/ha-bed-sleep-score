@@ -1,0 +1,18 @@
+{
+  "domain": "bed_sleep_score",
+  "name": "Bed Sleep Score",
+  "codeowners": [
+    "@artech-lab"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http"
+  ],
+  "documentation": "https://github.com/artech-lab/ha-bed-sleep-score",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/artech-lab/ha-bed-sleep-score/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

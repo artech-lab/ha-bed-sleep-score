@@ -1,0 +1,121 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configura un monitor del sonno da letto",
+        "description": "Scegli l'accelerometro del letto e la finestra di sonno. L'analisi dell'accelerazione la fa l'integrazione: ogni notte rileva i movimenti nella finestra e, alla sua fine, assegna alla notte un punteggio da 0 a 100.",
+        "data": {
+          "name": "Nome",
+          "accelerometer_sensors": "Sensori dell'accelerometro del letto",
+          "presence_entity": "Entità di presenza (opzionale)",
+          "window_start": "Inizio finestra di sonno",
+          "window_end": "Fine finestra di sonno"
+        },
+        "data_description": {
+          "name": "Usato per il dispositivo e come prefisso degli ID entità.",
+          "accelerometer_sensors": "Gli assi di accelerazione del sensore del letto (X, Y e Z, in m/s²), oppure un solo sensore che contiene già il modulo dell'accelerazione.",
+          "presence_entity": "Se impostata, la notte viene valutata solo quando questa entità è home/on, così un letto vuoto non sembra una notte perfetta.",
+          "window_start": "Da quest'ora si contano i movimenti. Si può cambiare in seguito dalla card o dalla pagina del dispositivo.",
+          "window_end": "A quest'ora la notte viene valutata."
+        }
+      }
+    },
+    "error": {
+      "sensor_count": "Seleziona da uno a tre sensori.",
+      "window_empty": "Inizio e fine devono essere diversi."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opzioni del monitor del sonno",
+        "data": {
+          "accelerometer_sensors": "Sensori dell'accelerometro del letto",
+          "presence_entity": "Entità di presenza (opzionale)",
+          "movement_threshold": "Soglia di movimento"
+        },
+        "data_description": {
+          "accelerometer_sensors": "Gli assi di accelerazione del sensore del letto (X, Y e Z, in m/s²), oppure un solo sensore che contiene già il modulo dell'accelerazione.",
+          "presence_entity": "Se impostata, la notte viene valutata solo quando questa entità è home/on, così un letto vuoto non sembra una notte perfetta.",
+          "movement_threshold": "Agitazione (deviazione standard mobile dell'accelerazione, m/s²) oltre la quale viene rilevato un movimento. Abbassala se i movimenti non vengono rilevati, alzala se ne vengono contati troppi. Le scale di calma e intensità seguono questo valore."
+        }
+      }
+    },
+    "error": {
+      "sensor_count": "Seleziona da uno a tre sensori."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "window_active": {
+        "name": "Finestra di sonno attiva"
+      },
+      "movement": {
+        "name": "Movimento nel letto"
+      }
+    },
+    "sensor": {
+      "score": {
+        "name": "Punteggio sonno",
+        "state_attributes": {
+          "night_of": {
+            "name": "Notte del"
+          },
+          "components": {
+            "name": "Componenti"
+          },
+          "max_points": {
+            "name": "Punti massimi"
+          },
+          "continuity_minutes": {
+            "name": "Sonno continuo massimo (min)"
+          },
+          "movements": {
+            "name": "Movimenti"
+          },
+          "clustered_movements": {
+            "name": "Movimenti ravvicinati"
+          },
+          "net_agitation": {
+            "name": "Agitazione netta"
+          },
+          "peak_agitation": {
+            "name": "Picco di agitazione"
+          },
+          "samples": {
+            "name": "Campioni"
+          },
+          "neutral_signal": {
+            "name": "Valori neutri per segnale insufficiente"
+          },
+          "formula_version": {
+            "name": "Versione formula"
+          }
+        }
+      },
+      "score_7_day_average": {
+        "name": "Media 7 giorni punteggio sonno"
+      },
+      "movements": {
+        "name": "Movimenti"
+      },
+      "clustered_movements": {
+        "name": "Movimenti ravvicinati"
+      },
+      "longest_undisturbed_sleep": {
+        "name": "Sonno continuo massimo"
+      },
+      "agitation": {
+        "name": "Agitazione"
+      }
+    },
+    "time": {
+      "window_start": {
+        "name": "Inizio finestra di sonno"
+      },
+      "window_end": {
+        "name": "Fine finestra di sonno"
+      }
+    }
+  }
+}
