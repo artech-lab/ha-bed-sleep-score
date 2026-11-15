@@ -130,7 +130,8 @@ async def test_three_axes_presence_and_persistence(hass: HomeAssistant, freezer:
     assert tracker.is_settling()
     await _feed(hass, freezer, start + timedelta(seconds=30), [9.80, 9.81, 9.80, 9.81, 9.80], axes[2])
     assert tracker.agitation is None
-    await _feed(hass, freezer, start + timedelta(minutes=4), [9.80, 9.81, 9.80, 9.81, 9.80], axes[2])
+    # Start with 9.81: repeating the last value (9.80) would not change the state.
+    await _feed(hass, freezer, start + timedelta(minutes=4), [9.81, 9.80, 9.81, 9.80, 9.81], axes[2])
     assert not tracker.is_settling()
     assert tracker.agitation is not None and tracker.agitation < 0.01
 
